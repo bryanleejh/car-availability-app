@@ -54,7 +54,6 @@ function AddBooking() {
   const [carId, setCarId] = useState<string>("");
   const [start, setStart] = useState("");
   const [end, setEnd] = useState("");
-  const [note, setNote] = useState("");
 
   return (
     <div className="border rounded p-3">
@@ -88,13 +87,6 @@ function AddBooking() {
           />
         </div>
 
-        <input
-          className="border rounded px-2 py-1 w-full"
-          placeholder="Note (optional)"
-          value={note}
-          onChange={(e) => setNote(e.target.value)}
-        />
-
         <button
           className="border rounded px-3"
           onClick={() => {
@@ -102,8 +94,7 @@ function AddBooking() {
             const s = new Date(start),
               e = new Date(end);
             if (s >= e) return;
-            addBooking({ carId, start: s, end: e, note: note || undefined });
-            setNote("");
+            addBooking({ carId, start: s, end: e });
             setStart("");
             setEnd("");
           }}
@@ -135,8 +126,7 @@ function BookingList() {
                 <span className="font-medium">{nameOf(b.carId)}</span> — booked
               </div>
               <div className="text-xs text-gray-600">
-                {b.start.toLocaleString()} → {b.end.toLocaleString()}{" "}
-                {b.note ? `· ${b.note}` : ""}
+                {b.start.toLocaleString()} → {b.end.toLocaleString()}
               </div>
             </div>
             <button

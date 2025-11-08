@@ -6,7 +6,6 @@ export type Booking = {
   carId: string;
   start: Date;
   end: Date;
-  note?: string;
 };
 
 type Store = {

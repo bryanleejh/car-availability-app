@@ -31,8 +31,11 @@ export default function CalendarView() {
   const cars = useStore((s) => s.cars);
   const bookings = useStore((s) => s.bookings);
 
+  const carName = (id: string) =>
+    cars.find((c) => c.id === id)?.name ?? "Unknown";
+
   const events: CalEvent[] = bookings.map((b) => ({
-    title: b.note ?? "Booked",
+    title: `${carName(b.carId)} — Booked`,
     start: new Date(b.start),
     end: new Date(b.end),
     resourceId: b.carId,
