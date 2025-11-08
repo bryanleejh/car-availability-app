@@ -5,12 +5,12 @@ import { useStore } from "./store";
 export default function App() {
   return (
     <div className="p-4 max-w-6xl mx-auto space-y-6">
-      <h1 className="text-2xl font-semibold">Car Availability Demo</h1>
+      <h1 className="text-2xl font-semibold">Car Bookings Demo</h1>
       <div className="grid md:grid-cols-3 gap-6">
         <div className="space-y-6">
           <AddCar />
-          <AddSlot />
-          <SlotList />
+          <AddBooking />
+          <BookingList />
         </div>
         <div className="md:col-span-2">
           <CalendarView />
@@ -49,17 +49,16 @@ function AddCar() {
   );
 }
 
-function AddSlot() {
-  const { cars, addSlot } = useStore();
+function AddBooking() {
+  const { cars, addBooking } = useStore();
   const [carId, setCarId] = useState<string>("");
   const [start, setStart] = useState("");
   const [end, setEnd] = useState("");
-  const [status, setStatus] = useState<"available" | "booked">("available");
   const [note, setNote] = useState("");
 
   return (
     <div className="border rounded p-3">
-      <h2 className="font-medium mb-2">Add Availability/Booking</h2>
+      <h2 className="font-medium mb-2">Add Booking</h2>
       <div className="space-y-2">
         <select
           className="border rounded px-2 py-1 w-full"
@@ -89,23 +88,12 @@ function AddSlot() {
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-2">
-          <select
-            className="border rounded px-2 py-1"
-            value={status}
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            onChange={(e) => setStatus(e.target.value as any)}
-          >
-            <option value="available">Available</option>
-            <option value="booked">Booked</option>
-          </select>
-          <input
-            className="border rounded px-2 py-1"
-            placeholder="Note (optional)"
-            value={note}
-            onChange={(e) => setNote(e.target.value)}
-          />
-        </div>
+        <input
+          className="border rounded px-2 py-1 w-full"
+          placeholder="Note (optional)"
+          value={note}
+          onChange={(e) => setNote(e.target.value)}
+        />
 
         <button
           className="border rounded px-3"
@@ -114,60 +102,53 @@ function AddSlot() {
             const s = new Date(start),
               e = new Date(end);
             if (s >= e) return;
-            addSlot({
-              carId,
-              start: s,
-              end: e,
-              status,
-              note: note || undefined,
-            });
+            addBooking({ carId, start: s, end: e, note: note || undefined });
             setNote("");
             setStart("");
             setEnd("");
           }}
         >
-          Add Slot
+          Add Booking
         </button>
       </div>
     </div>
   );
 }
 
-function SlotList() {
-  const slots = useStore((s) => s.slots);
+function BookingList() {
+  const bookings = useStore((s) => s.bookings);
   const cars = useStore((s) => s.cars);
-  const removeSlot = useStore((s) => s.removeSlot);
+  const removeBooking = useStore((s) => s.removeBooking);
   const nameOf = (id: string) =>
     cars.find((c) => c.id === id)?.name ?? "Unknown";
   return (
     <div className="border rounded p-3">
-      <h2 className="font-medium mb-2">All Slots</h2>
+      <h2 className="font-medium mb-2">All Bookings</h2>
       <ul className="space-y-2 max-h-64 overflow-auto">
-        {slots.map((s) => (
+        {bookings.map((b) => (
           <li
-            key={s.id}
+            key={b.id}
             className="border rounded px-2 py-1 flex items-center justify-between"
           >
             <div>
               <div className="text-sm">
-                <span className="font-medium">{nameOf(s.carId)}</span> —{" "}
-                {s.status}
+                <span className="font-medium">{nameOf(b.carId)}</span> — booked
               </div>
               <div className="text-xs text-gray-600">
-                {s.start.toLocaleString()} → {s.end.toLocaleString()}{" "}
-                {s.note ? `· ${s.note}` : ""}
+                {b.start.toLocaleString()} → {b.end.toLocaleString()}{" "}
+                {b.note ? `· ${b.note}` : ""}
               </div>
             </div>
             <button
               className="text-xs underline"
-              onClick={() => removeSlot(s.id)}
+              onClick={() => removeBooking(b.id)}
             >
               remove
             </button>
           </li>
         ))}
-        {slots.length === 0 && (
-          <li className="text-sm text-gray-500">No slots yet.</li>
+        {bookings.length === 0 && (
+          <li className="text-sm text-gray-500">No bookings yet.</li>
         )}
       </ul>
     </div>

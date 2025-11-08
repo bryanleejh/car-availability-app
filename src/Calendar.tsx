@@ -14,14 +14,12 @@ const localizer = dateFnsLocalizer({
   locales,
 });
 
-// Keep our own event shape (we stubbed types)
 type CalEvent = {
   title: string;
   start: Date;
   end: Date;
   allDay?: boolean;
   resourceId?: string;
-  status: "available" | "booked";
 };
 
 export default function CalendarView() {
@@ -31,14 +29,13 @@ export default function CalendarView() {
   const [date, setDate] = useState(new Date());
 
   const cars = useStore((s) => s.cars);
-  const slots = useStore((s) => s.slots);
+  const bookings = useStore((s) => s.bookings);
 
-  const events: CalEvent[] = slots.map((s) => ({
-    title: s.note ?? (s.status === "available" ? "Available" : "Booked"),
-    start: new Date(s.start),
-    end: new Date(s.end),
-    resourceId: s.carId,
-    status: s.status,
+  const events: CalEvent[] = bookings.map((b) => ({
+    title: b.note ?? "Booked",
+    start: new Date(b.start),
+    end: new Date(b.end),
+    resourceId: b.carId,
     allDay: false,
   }));
 
@@ -46,6 +43,7 @@ export default function CalendarView() {
     resourceId: c.id,
     resourceTitle: c.name,
   }));
+  const usingResources = view !== Views.MONTH && resources.length > 0;
 
   return (
     <div style={{ height: 600 }}>
@@ -60,15 +58,25 @@ export default function CalendarView() {
         toolbar
         step={30}
         timeslots={2}
-        resources={view === Views.MONTH ? undefined : resources}
+        resources={usingResources ? resources : undefined}
         resourceIdAccessor="resourceId"
         resourceTitleAccessor="resourceTitle"
-        eventPropGetter={(event: CalEvent) => {
-          const backgroundColor =
-            event.status === "available" ? "#22c55e" : "#ef4444";
-          return { style: { backgroundColor, border: "none", color: "white" } };
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        eventPropGetter={(_event: CalEvent) => {
+          return {
+            style: {
+              backgroundColor: "#ef4444",
+              border: "none",
+              color: "white",
+            },
+          };
         }}
       />
+      {!usingResources && view !== Views.MONTH && cars.length === 0 && (
+        <p className="text-sm text-gray-500 mt-2">
+          Add a car to see lanes in Week/Day view.
+        </p>
+      )}
     </div>
   );
 }

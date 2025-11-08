@@ -1,31 +1,30 @@
 import { create } from "zustand";
 
 export type Car = { id: string; name: string };
-export type Availability = {
+export type Booking = {
   id: string;
   carId: string;
   start: Date;
   end: Date;
-  status: "available" | "booked";
   note?: string;
 };
 
 type Store = {
   cars: Car[];
-  slots: Availability[];
+  bookings: Booking[];
   addCar: (name: string) => void;
-  addSlot: (slot: Omit<Availability, "id">) => void;
-  removeSlot: (id: string) => void;
+  addBooking: (b: Omit<Booking, "id">) => void;
+  removeBooking: (id: string) => void;
 };
 
 const uid = () => crypto.randomUUID();
 
 export const useStore = create<Store>((set) => ({
   cars: [],
-  slots: [],
+  bookings: [],
   addCar: (name) => set((s) => ({ cars: [...s.cars, { id: uid(), name }] })),
-  addSlot: (slot) =>
-    set((s) => ({ slots: [...s.slots, { ...slot, id: uid() }] })),
-  removeSlot: (id) =>
-    set((s) => ({ slots: s.slots.filter((x) => x.id !== id) })),
+  addBooking: (b) =>
+    set((s) => ({ bookings: [...s.bookings, { ...b, id: uid() }] })),
+  removeBooking: (id) =>
+    set((s) => ({ bookings: s.bookings.filter((x) => x.id !== id) })),
 }));
