@@ -53,9 +53,9 @@ export default function CalendarView() {
         localizer={localizer}
         events={events}
         view={view}
-        onView={(v) => setView(v)}
+        onView={(v: (typeof Views)[keyof typeof Views]) => setView(v)}
         date={date}
-        onNavigate={(d) => setDate(d as Date)}
+        onNavigate={(d: Date) => setDate(d)}
         views={[Views.DAY, Views.WEEK, Views.MONTH]}
         toolbar
         step={30}
